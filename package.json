@@ -11,7 +11,7 @@
     "lint": "eslint --ext .ts,.js src",
     "lint:fix": "eslint --ext .ts,.js src --fix",
     "format": "prettier --write \"src/**/*.{ts,js,json,md}\"",
-    "prepare": "husky"
+    "prepare": "husky || true"
   },
   "author": "Oleg Novikov",
   "license": "MIT",

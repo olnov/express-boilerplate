@@ -16,7 +16,7 @@ A a TypeScript-based boilerplate for building robust and secure Express.js appli
 ## Installation
 
 ```bash
-git clone 
+git clone https://github.com/olnov/express-boilerplate.git
 cd express-boilerplate
 npm install
 
