@@ -43,11 +43,13 @@ app.use(
 );
 
 // HTTP Logging middleware
-app.use(morgan('combined', {
-  stream: {
-    write: (message) => logger.info(message.trim()),
-  },
-}));
+app.use(
+  morgan('combined', {
+    stream: {
+      write: (message) => logger.info(message.trim()),
+    },
+  }),
+);
 // Body parsing
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

@@ -4,10 +4,10 @@ import logger from '@config/logger';
 const MONGODB_URI = process.env.MONGODB_URI;
 
 export const connectDB = async () => {
-    if (!MONGODB_URI) {
-        logger.error('MONGODB_URI is not defined', { module: 'db' });
-        process.exit(1);
-    }
+  if (!MONGODB_URI) {
+    logger.error('MONGODB_URI is not defined', { module: 'db' });
+    process.exit(1);
+  }
   try {
     await mongoose.connect(MONGODB_URI, {
       autoIndex: true,
