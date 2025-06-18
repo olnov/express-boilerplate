@@ -17,9 +17,11 @@ globalHandlers.setup();
 
 // Graceful shutdown handler
 const shutdown = () => {
-  logger.info('Received shutdown signal, shutting down gracefully...', { module: 'main' });
+  logger.info('Received shutdown signal, shutting down gracefully...', {
+    module: 'main',
+  });
   bootstrap.shutdown();
-}
+};
 
 process.on('SIGTERM', shutdown);
 process.on('SIGINT', shutdown);

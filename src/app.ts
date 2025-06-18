@@ -72,7 +72,7 @@ export class App {
   // API Routes
   private initialiseRoutes() {
     this.app.use('/api/example', exampleRouter);
-  };
+  }
 
   public listen(port: number, callback?: () => void): void {
     this.server = http.createServer(this.app);
@@ -88,5 +88,4 @@ export class App {
       logger.warn('No server to close', { module: 'app' });
     }
   }
-  
 }

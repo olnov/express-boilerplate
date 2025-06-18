@@ -15,7 +15,10 @@ export class Bootstrap {
     await this.db.connectDB();
 
     this.app.listen(port, () => {
-      logger.info(`Server running at http://localhost:${port} in ${mode} mode`, { module: 'bootstrap' });
+      logger.info(
+        `Server running at http://localhost:${port} in ${mode} mode`,
+        { module: 'bootstrap' },
+      );
     });
   }
 
