@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Application } from 'express';
 
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
@@ -8,57 +8,85 @@ import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
 import exampleRouter from '@routes/example.route';
 import 'dotenv/config';
+import http, { Server } from 'http';
 
-const app = express();
+export class App {
+  public app: Application;
+  private server: Server | null = null;
 
-// Security headers
-app.use(
-  helmet({
-    noSniff: true, // Block MIME type sniffing
-    xssFilter: true, // Enable XSS protection
-    contentSecurityPolicy: false, // Should be configured at the proxy level
-    hsts: false, // Should be configured at the proxy level
-    hidePoweredBy: true, // Hide the "X-Powered-By" header
-  }),
-);
+  constructor() {
+    this.app = express();
+    this.initialiseMiddlewares();
+    this.initialiseRoutes();
+  }
 
-// Rate limiting
-app.use(
-  rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes time window
-    max: 100, // limit each IP to 100 requests per window
-  }),
-);
+  // Security headers
+  private initialiseMiddlewares() {
+    this.app.use(
+      helmet({
+        noSniff: true, // Block MIME type sniffing
+        xssFilter: true, // Enable XSS protection
+        contentSecurityPolicy: false, // Should be configured at the proxy level
+        hsts: false, // Should be configured at the proxy level
+        hidePoweredBy: true, // Hide the "X-Powered-By" header
+      }),
+    );
 
-// CORS configuration
-const allowedOrigins = process.env.CLIENT_ORIGINS
-  ? process.env.CLIENT_ORIGINS.split(',')
-  : ['http://localhost:3000'];
+    // Rate limiting
+    this.app.use(
+      rateLimit({
+        windowMs: 15 * 60 * 1000, // 15 minutes time window
+        max: 100, // limit each IP to 100 requests per window
+      }),
+    );
 
-app.use(
-  cors({
-    origin: allowedOrigins,
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  }),
-);
+    // CORS configuration
+    const allowedOrigins = process.env.CLIENT_ORIGINS
+      ? process.env.CLIENT_ORIGINS.split(',')
+      : ['http://localhost:3000'];
 
-// HTTP Logging middleware
-app.use(
-  morgan('combined', {
-    stream: {
-      write: (message) => logger.info(message.trim()),
-    },
-  }),
-);
-// Body parsing
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
+    this.app.use(
+      cors({
+        origin: allowedOrigins,
+        methods: ['GET', 'POST', 'PUT', 'DELETE'],
+      }),
+    );
 
-// Static assets
-app.use(express.static('public'));
+    // HTTP Logging middleware
+    this.app.use(
+      morgan('combined', {
+        stream: {
+          write: (message) => logger.info(message.trim()),
+        },
+      }),
+    );
+    // Body parsing
+    this.app.use(express.json());
+    this.app.use(express.urlencoded({ extended: true }));
+    this.app.use(cookieParser());
 
-// API Routes
-app.use('/api/example', exampleRouter);
+    // Static assets
+    this.app.use(express.static('public'));
+  }
 
-export default app;
+  // API Routes
+  private initialiseRoutes() {
+    this.app.use('/api/example', exampleRouter);
+  };
+
+  public listen(port: number, callback?: () => void): void {
+    this.server = http.createServer(this.app);
+    this.server.listen(port, callback);
+    logger.info(`Initialising server on port ${port}`, { module: 'app' });
+  }
+
+  public close(callback?: () => void): void {
+    if (this.server) {
+      this.server.close(callback);
+      logger.info('Server closed', { module: 'app' });
+    } else {
+      logger.warn('No server to close', { module: 'app' });
+    }
+  }
+  
+}
